@@ -53,12 +53,12 @@ jobs:
               run: semgrep scan --config auto --sarif --sarif-output=semgrep.sarif 
               shell: bash
 
-            - name: 'Upload tfsec artifact'
-              uses: actions/upload-artifact@v4.6.2
-              if: always()
-              with:
-                name: samgrep-findings.sarif
-                path: semgrep.sarif            
+            #- name: 'Upload tfsec artifact'
+            #  uses: actions/upload-artifact@v4.6.2
+            #  if: always()
+            #  with:
+            #    name: samgrep-findings.sarif
+            #    path: semgrep.sarif            
 
             - name: Create and push tag
               id: tag_version
