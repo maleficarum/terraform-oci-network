@@ -17,7 +17,7 @@ jobs:
         steps:
 
             - name: Clean environment
-              run : export TMP_FILE=$(find /var/folders -name gitleaks.tmp 2>> /dev/null) && [[ ! -f $TMP_FILE ]] || rm -rf $TMP_FILE
+              run : export TMP_FILE=$(find /tmp -name gitleaks.tmp 2>> /dev/null) && [[ ! -f $TMP_FILE ]] || rm -rf $TMP_FILE
               shell: bash
 
             #- name: Checkout
