@@ -1,0 +1,77 @@
+name: On Push Request
+env:
+  environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+
+on:
+    workflow_dispatch:
+    workflow_call:
+    pull_request:
+      branches: [ main, development ]
+
+jobs:
+    plan:
+        name: 'Review and Prepare'
+        runs-on: 'self-hosted'
+        #environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    
+        steps:
+
+            - name: Clean environment
+              run : export TMP_FILE=$(find /var/folders -name gitleaks.tmp 2>> /dev/null) && [[ ! -f $TMP_FILE ]] || rm -rf $TMP_FILE
+              shell: bash
+
+            #- name: Checkout
+            #  uses: actions/checkout@master
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0            
+
+            - name: Echo environment
+              run: echo "Using environment [${environment}]"
+              shell: bash
+
+            - name: 'TFLint init'
+              run: cd ${GITHUB_WORKSPACE}/ && tflint --init
+              shell: bash              
+
+            - name: 'TFSec execution'
+              run: cd ${GITHUB_WORKSPACE} && tfsec --force-all-dirs --exclude-downloaded-modules --soft-fail -f markdown >> $GITHUB_STEP_SUMMARY
+              shell: bash
+
+            # Conflict with github actions https://github.com/gitleaks/gitleaks/issues/1306 using actions/checkout@master
+            - name: 'Looking for GIT Leaks'
+              uses: gitleaks/gitleaks-action@v2
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #- name: 'Looking for git leaks'
+            #  run: cd ${GITHUB_WORKSPACE}/ && gitleaks git -v
+            #  shell: bash
+
+            - name: Code scanning
+              run: semgrep scan --config auto --sarif --sarif-output=semgrep.sarif 
+              shell: bash
+
+            - name: 'Upload tfsec artifact'
+              uses: actions/upload-artifact@v4.6.2
+              if: always()
+              with:
+                name: samgrep-findings.sarif
+                path: semgrep.sarif
+
+            - name: Create and push tag
+              id: tag_version
+              uses: mathieudutour/github-tag-action@v6.2
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+            
+            - name: Create a GitHub release
+              uses: ncipollo/release-action@v1
+              with:
+                tag: ${{ steps.tag_version.outputs.new_tag }}
+                name: Release ${{ steps.tag_version.outputs.new_tag }}
+                body: ${{ steps.tag_version.outputs.changelog }}    
+
+            - name: Create Terraform documentation 
+              run: terraform-docs markdown . >> $GITHUB_STEP_SUMMARY
+              shell: bash                
