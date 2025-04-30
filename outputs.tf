@@ -7,18 +7,18 @@ output "ad" {
 
 # tflint-ignore: terraform_unused_declarations
 output "vcn" {
-  value = oci_core_vcn.vcn
+  value       = oci_core_vcn.vcn
   description = "The created VCN"
 }
 
 # tflint-ignore: terraform_unused_declarations
 output "private_subnet" {
-  value = oci_core_subnet.private_subnet
+  value       = oci_core_subnet.private_subnet
   description = "The created private subnet"
 }
 
 # tflint-ignore: terraform_unused_declarations
 output "public_subnet" {
-  value = oci_core_subnet.public_subnet
+  value       = oci_core_subnet.public_subnet
   description = "The created public subnet"
 }
