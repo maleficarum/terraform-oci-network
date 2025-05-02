@@ -139,6 +139,18 @@ resource "oci_core_default_security_list" "security_list" {
     stateless   = "false"
 
     tcp_options {
+      max = "6443"
+      min = "6443"
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = "false"
+
+    tcp_options {
       max = "22"
       min = "22"
     }
