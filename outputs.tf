@@ -22,8 +22,3 @@ output "public_subnet" {
   value       = oci_core_subnet.public_subnet
   description = "The created public subnet"
 }
-
-output "images" {
-  value = data.oci_core_images.oke_worker_images
-  description = "Available compute instances"
-}
