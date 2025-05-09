@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 variable "environment" {
   type        = string
   description = "The target environment"
 }
-=======
->>>>>>> main
 variable "vcn_definition" {
   description = "VCN Definition"
   type = object({
@@ -34,7 +31,6 @@ variable "compartment_id" {
   type        = string
   description = "Compartment to deploy"
 }
-<<<<<<< HEAD
 
 variable "ingress_security_rules" {
   description = "Ingress list for the VCN"
@@ -64,5 +60,3 @@ variable "egress_security_rules" {
     })
   }))
 }
-=======
->>>>>>> main

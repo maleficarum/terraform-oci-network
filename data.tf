@@ -1,7 +1,6 @@
 # tflint-ignore: terraform_unused_declarations
 data "oci_identity_availability_domains" "oci_identity_availability_domain" {
   compartment_id = var.compartment_id
-<<<<<<< HEAD
 }
 
 data "oci_core_images" "oke_worker_images" {
@@ -22,6 +21,3 @@ data "oci_core_services" "all_services" {
     regex  = true
   }
 }
-=======
-}
->>>>>>> main
