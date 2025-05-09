@@ -146,15 +146,15 @@ resource "oci_core_default_security_list" "security_list" {
   }
 
   egress_security_rules {
-  protocol    = "6"  # TCP protocol (IANA number for TCP)
-  destination = oci_core_subnet.private_subnet.cidr_block
-  stateless   = false
-  tcp_options {
-    min = 32767
-    max = 60999
+    protocol    = "6" # TCP protocol (IANA number for TCP)
+    destination = oci_core_subnet.private_subnet.cidr_block
+    stateless   = false
+    tcp_options {
+      min = 32767
+      max = 60999
+    }
   }
-}
- 
+
   ingress_security_rules {
     protocol    = "6"
     source      = "0.0.0.0/0"
