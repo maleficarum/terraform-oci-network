@@ -118,9 +118,25 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   }
 }
 
+resource "oci_core_service_gateway" "example_service_gateway" {
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.vcn.id
+  display_name   = "${var.vcn_definition.name}-service-gateway"
+
+  services {
+    # Typically you'll use the "All Services" option
+    service_id = data.oci_core_services.all_services.services[0].id
+  }
+
+  route_table_id = oci_core_vcn.vcn.default_route_table_id
+}
+
 resource "oci_core_default_security_list" "security_list" {
   compartment_id = var.compartment_id
   display_name   = "Default Security List for ${var.vcn_definition.name}"
+
+  freeform_tags = {
+  }
 
   egress_security_rules {
     destination      = "0.0.0.0/0"
@@ -129,7 +145,14 @@ resource "oci_core_default_security_list" "security_list" {
     stateless        = "false"
   }
 
-  freeform_tags = {
+  egress_security_rules {
+    protocol    = "6" # TCP protocol (IANA number for TCP)
+    destination = oci_core_subnet.private_subnet.cidr_block
+    stateless   = false
+    tcp_options {
+      min = 32767
+      max = 60999
+    }
   }
 
   ingress_security_rules {
@@ -153,6 +176,30 @@ resource "oci_core_default_security_list" "security_list" {
     tcp_options {
       max = "22"
       min = "22"
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = "false"
+
+    tcp_options {
+      max = "6379"
+      min = "6379"
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = "false"
+
+    tcp_options {
+      max = "12250"
+      min = "12250"
     }
   }
 

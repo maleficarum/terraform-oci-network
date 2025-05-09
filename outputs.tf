@@ -24,6 +24,6 @@ output "public_subnet" {
 }
 
 output "images" {
-  value = data.oci_core_images.oke_worker_images
+  value       = data.oci_core_images.oke_worker_images
   description = "Available compute instances"
 }
