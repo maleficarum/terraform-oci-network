@@ -8,7 +8,7 @@ resource "oci_core_vcn" "vcn" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 
@@ -26,7 +26,7 @@ resource "oci_core_subnet" "public_subnet" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
@@ -45,10 +45,17 @@ resource "oci_core_subnet" "private_subnet" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
+
+#resource "oci_core_public_ip" "vm_public_ip" {
+#  count                = var.public_reserved_ips
+#  compartment_id = var.compartment_id
+#  lifetime      = "RESERVED"
+#  display_name  = "reserved-public-ip${count.index}"
+#}
 
 resource "oci_core_route_table" "public_route_table" {
   compartment_id = var.compartment_id
@@ -66,7 +73,7 @@ resource "oci_core_route_table" "public_route_table" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 
@@ -88,7 +95,7 @@ resource "oci_core_route_table" "private_route_table" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
@@ -104,7 +111,7 @@ resource "oci_core_internet_gateway" "internet_gateway" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
@@ -120,12 +127,12 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   }
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
 
-resource "oci_core_service_gateway" "example_service_gateway" {
+resource "oci_core_service_gateway" "service_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = "${var.vcn_definition.name}-service-gateway"
@@ -138,7 +145,7 @@ resource "oci_core_service_gateway" "example_service_gateway" {
   route_table_id = oci_core_vcn.vcn.default_route_table_id
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 }
@@ -290,7 +297,7 @@ resource "oci_core_default_security_list" "security_list" {
   */
 
   defined_tags = {
-    "Oracle-Tags.CreatedBy"   = "default/terraform",
+    "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
   }
 
