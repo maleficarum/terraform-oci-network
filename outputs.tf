@@ -27,3 +27,8 @@ output "images" {
   value       = data.oci_core_images.oke_worker_images
   description = "Available compute instances"
 }
+
+#output "reserved_ips" {
+#  value = oci_core_public_ip.vm_public_ip
+#  description = "The reserved IPs"
+#}

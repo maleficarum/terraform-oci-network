@@ -27,6 +27,12 @@ variable "public_subnet_definition" {
   })
 }
 
+#variable "public_reserved_ips" {
+#  description = "The total public IP reservations"
+#  type = number
+#  default = 2
+#}
+
 variable "compartment_id" {
   type        = string
   description = "Compartment to deploy"
@@ -60,3 +66,5 @@ variable "egress_security_rules" {
     })
   }))
 }
+
+
