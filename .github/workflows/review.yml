@@ -33,6 +33,7 @@ jobs:
               shell: bash
 
             - name: 'TFLint init'
+              if: env.environment == 'development'
               run: cd ${GITHUB_WORKSPACE}/ && tflint --init
               shell: bash              
 
@@ -42,6 +43,7 @@ jobs:
 
             # Conflict with github actions https://github.com/gitleaks/gitleaks/issues/1306 using actions/checkout@master
             - name: 'Looking for GIT Leaks'
+              if: env.environment == 'development'
               uses: gitleaks/gitleaks-action@v2
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
