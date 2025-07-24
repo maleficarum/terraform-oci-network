@@ -1,6 +1,6 @@
 variable "environment" {
   type        = string
-  description = "The target environment"
+  description = "The target environment (qa, development, production)"
 }
 variable "vcn_definition" {
   description = "VCN Definition"
@@ -35,7 +35,7 @@ variable "public_subnet_definition" {
 
 variable "compartment_id" {
   type        = string
-  description = "Compartment to deploy"
+  description = "Parent compartment (OCID) where all the sub-compartments will be created (networking, compute)"
 }
 
 variable "ingress_security_rules" {
