@@ -8,19 +8,19 @@ output "ad" {
 # tflint-ignore: terraform_unused_declarations
 output "vcn" {
   value       = oci_core_vcn.vcn
-  description = "The created VCN"
+  description = "The created VCN (OCID)"
 }
 
 # tflint-ignore: terraform_unused_declarations
 output "private_subnet" {
   value       = oci_core_subnet.private_subnet
-  description = "The created private subnet"
+  description = "The created private subnet (OCID)"
 }
 
 # tflint-ignore: terraform_unused_declarations
 output "public_subnet" {
   value       = oci_core_subnet.public_subnet
-  description = "The created public subnet"
+  description = "The created public subnet (OCID)"
 }
 
 output "images" {
@@ -29,12 +29,7 @@ output "images" {
 }
 
 output "network_compartment" {
-  value = oci_identity_compartment.network_compartment.id
-  description = "The network compartment ID"
-  
-}
+  value       = oci_identity_compartment.network_compartment.id
+  description = "The network compartment (OCID)"
 
-#output "reserved_ips" {
-#  value = oci_core_public_ip.vm_public_ip
-#  description = "The reserved IPs"
-#}
+}
