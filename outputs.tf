@@ -28,6 +28,12 @@ output "images" {
   description = "Available compute instances"
 }
 
+output "network_compartment" {
+  value = oci_identity_compartment.network_compartment.id
+  description = "The network compartment ID"
+  
+}
+
 #output "reserved_ips" {
 #  value = oci_core_public_ip.vm_public_ip
 #  description = "The reserved IPs"
