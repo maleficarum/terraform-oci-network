@@ -61,12 +61,14 @@ jobs:
             #    path: semgrep.sarif            
 
             - name: Create and push tag
+              if: env.environment == 'production'
               id: tag_version
               uses: mathieudutour/github-tag-action@v6.2
               with:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Create a GitHub release
+              if: env.environment == 'production'
               uses: ncipollo/release-action@v1
               with:
                 tag: ${{ steps.tag_version.outputs.new_tag }}
