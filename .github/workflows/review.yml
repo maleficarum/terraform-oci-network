@@ -6,7 +6,9 @@ on:
     workflow_dispatch:
     workflow_call:
     pull_request:
-      branches: [ main, development ]
+      branches: [ development ]
+    push:
+      branches: [ main ]
 
 jobs:
     plan:
@@ -33,17 +35,18 @@ jobs:
               shell: bash
 
             - name: 'TFLint init'
-              if: env.environment == 'development'
+              if: github.event.pull_request.base.ref == 'development'
               run: cd ${GITHUB_WORKSPACE}/ && tflint --init
               shell: bash              
 
             - name: 'TFSec execution'
+              if: github.event.pull_request.base.ref == 'development'
               run: cd ${GITHUB_WORKSPACE} && tfsec --force-all-dirs --exclude-downloaded-modules --soft-fail -f markdown >> $GITHUB_STEP_SUMMARY
               shell: bash
 
             # Conflict with github actions https://github.com/gitleaks/gitleaks/issues/1306 using actions/checkout@master
             - name: 'Looking for GIT Leaks'
-              if: env.environment == 'development'
+              if: github.event.pull_request.base.ref == 'development'
               uses: gitleaks/gitleaks-action@v2
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
