@@ -8,7 +8,7 @@ output "ad" {
 # tflint-ignore: terraform_unused_declarations
 output "vcn" {
   value       = oci_core_vcn.vcn
-  description = "The created VCN (OCID)"
+  description = "The created VCN"
 }
 
 # tflint-ignore: terraform_unused_declarations
@@ -31,5 +31,4 @@ output "images" {
 output "network_compartment" {
   value       = oci_identity_compartment.network_compartment.id
   description = "The network compartment (OCID)"
-
 }
