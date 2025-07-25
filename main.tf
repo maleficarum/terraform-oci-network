@@ -8,7 +8,7 @@ resource "oci_core_vcn" "vcn" {
   cidr_block     = var.vcn_definition.cidr_block
   display_name   = var.vcn_definition.name
   compartment_id = oci_identity_compartment.network_compartment.id
-  dns_label      = var.vcn_definition.dbs_label
+  dns_label      = var.vcn_definition.dns_label
 
   freeform_tags = {
   }
@@ -16,6 +16,7 @@ resource "oci_core_vcn" "vcn" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 
 }
@@ -34,6 +35,7 @@ resource "oci_core_subnet" "public_subnet" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -53,6 +55,7 @@ resource "oci_core_subnet" "private_subnet" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -81,6 +84,7 @@ resource "oci_core_route_table" "public_route_table" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 
 }
@@ -103,6 +107,7 @@ resource "oci_core_route_table" "private_route_table" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -119,6 +124,7 @@ resource "oci_core_internet_gateway" "internet_gateway" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -135,6 +141,7 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -153,6 +160,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 }
 
@@ -305,6 +313,7 @@ resource "oci_core_default_security_list" "security_list" {
   defined_tags = {
     "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
     "Oracle-Tags.Environment" = var.environment
+    "Oracle-Tags.Application" = var.application_name
   }
 
   manage_default_resource_id = oci_core_vcn.vcn.default_security_list_id

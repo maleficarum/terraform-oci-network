@@ -7,7 +7,7 @@ variable "vcn_definition" {
   type = object({
     cidr_block = string,
     name       = string,
-    dbs_label  = string
+    dns_label  = string
   })
 }
 
@@ -67,4 +67,8 @@ variable "egress_security_rules" {
   }))
 }
 
-
+variable "application_name" {
+  type = string
+  default = "General"
+  description = "The application name that will be deployed over this resource"
+}
