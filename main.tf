@@ -22,10 +22,12 @@ resource "oci_core_vcn" "vcn" {
 }
 
 resource "oci_core_subnet" "public_subnet" {
-  cidr_block     = var.public_subnet_definition.cidr_block
+  count = length(var.public_subnet_definition)
+
+  cidr_block     = var.public_subnet_definition[count.index].cidr_block
   compartment_id = oci_identity_compartment.network_compartment.id
   vcn_id         = oci_core_vcn.vcn.id
-  display_name   = var.public_subnet_definition.name
+  display_name   = var.public_subnet_definition[count.index].name
 
   route_table_id = oci_core_route_table.public_route_table.id
 
@@ -40,10 +42,12 @@ resource "oci_core_subnet" "public_subnet" {
 }
 
 resource "oci_core_subnet" "private_subnet" {
-  cidr_block                 = var.private_subnet_definition.cidr_block
+  count = length(var.private_subnet_definition)
+
+  cidr_block                 = var.private_subnet_definition[count.index].cidr_block
   compartment_id             = oci_identity_compartment.network_compartment.id
   vcn_id                     = oci_core_vcn.vcn.id
-  display_name               = var.private_subnet_definition.name
+  display_name               = var.private_subnet_definition[count.index].name
   prohibit_public_ip_on_vnic = true
 
   route_table_id            = oci_core_route_table.private_route_table.id
