@@ -12,19 +12,19 @@ variable "vcn_definition" {
 }
 
 variable "private_subnet_definition" {
-  description = "Private subnet Definition"
-  type = object({
+  description = "Private subnets Definition"
+  type = list(object({
     cidr_block = string,
     name       = string
-  })
+  }))
 }
 
 variable "public_subnet_definition" {
-  description = "Public subnet Definition"
-  type = object({
+  description = "Public subnets Definition"
+  type = list(object({
     cidr_block = string,
     name       = string
-  })
+  }))
 }
 
 #variable "public_reserved_ips" {
