@@ -27,6 +27,7 @@ resource "oci_core_subnet" "public_subnet" {
   count = length(var.public_subnet_definition)
 
   cidr_block     = var.public_subnet_definition[count.index].cidr_block
+
   compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.public_subnet_definition[count.index].name
