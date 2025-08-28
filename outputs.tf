@@ -29,6 +29,6 @@ output "images" {
 }
 
 output "network_compartment" {
-  value       = oci_identity_compartment.network_compartment.id
+  value       = local.compartment_id
   description = "The network compartment (OCID)"
 }

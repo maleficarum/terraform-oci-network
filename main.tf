@@ -1,4 +1,6 @@
 resource "oci_identity_compartment" "network_compartment" {
+  count = var.compartment_id != "" ? 1 : 0
+
   compartment_id = var.compartment_id
   description    = "Compartment for network resources"
   name           = "network"
@@ -7,7 +9,7 @@ resource "oci_identity_compartment" "network_compartment" {
 resource "oci_core_vcn" "vcn" {
   cidr_block     = var.vcn_definition.cidr_block
   display_name   = var.vcn_definition.name
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   dns_label      = var.vcn_definition.dns_label
 
   freeform_tags = {
@@ -25,7 +27,7 @@ resource "oci_core_subnet" "public_subnet" {
   count = length(var.public_subnet_definition)
 
   cidr_block     = var.public_subnet_definition[count.index].cidr_block
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.public_subnet_definition[count.index].name
 
@@ -45,7 +47,7 @@ resource "oci_core_subnet" "private_subnet" {
   count = length(var.private_subnet_definition)
 
   cidr_block                 = var.private_subnet_definition[count.index].cidr_block
-  compartment_id             = oci_identity_compartment.network_compartment.id
+  compartment_id             = local.compartment_id
   vcn_id                     = oci_core_vcn.vcn.id
   display_name               = var.private_subnet_definition[count.index].name
   prohibit_public_ip_on_vnic = true
@@ -65,13 +67,13 @@ resource "oci_core_subnet" "private_subnet" {
 
 #resource "oci_core_public_ip" "vm_public_ip" {
 #  count                = var.public_reserved_ips
-#  compartment_id = oci_identity_compartment.network_compartment.id
+#  compartment_id = local.compartment_id
 #  lifetime      = "RESERVED"
 #  display_name  = "reserved-public-ip${count.index}"
 #}
 
 resource "oci_core_route_table" "public_route_table" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = "${var.vcn_definition.name}-public_route-table"
 
@@ -94,7 +96,7 @@ resource "oci_core_route_table" "public_route_table" {
 }
 
 resource "oci_core_route_table" "private_route_table" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
 
   display_name = "${var.vcn_definition.name}-private-route-table"
@@ -116,7 +118,7 @@ resource "oci_core_route_table" "private_route_table" {
 }
 
 resource "oci_core_internet_gateway" "internet_gateway" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
 
   enabled      = true
@@ -133,7 +135,7 @@ resource "oci_core_internet_gateway" "internet_gateway" {
 }
 
 resource "oci_core_nat_gateway" "nat_gateway" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
 
   block_traffic = false
@@ -150,7 +152,7 @@ resource "oci_core_nat_gateway" "nat_gateway" {
 }
 
 resource "oci_core_service_gateway" "service_gateway" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = "${var.vcn_definition.name}-service-gateway"
 
@@ -169,7 +171,7 @@ resource "oci_core_service_gateway" "service_gateway" {
 }
 
 resource "oci_core_default_security_list" "security_list" {
-  compartment_id = oci_identity_compartment.network_compartment.id
+  compartment_id = local.compartment_id
   display_name   = "Default Security List for ${var.vcn_definition.name}"
 
   freeform_tags = {
