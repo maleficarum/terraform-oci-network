@@ -1,3 +1,4 @@
+# tflint-ignore: terraform_unused_declarations
 variable "environment" {
   type        = string
   description = "The target environment (qa, development, production)"
@@ -7,7 +8,8 @@ variable "vcn_definition" {
   type = object({
     cidr_block = string,
     name       = string,
-    dns_label  = string
+    dns_label  = string,
+    #has_drg = optional(bool, false)
   })
 }
 
@@ -15,7 +17,8 @@ variable "private_subnet_definition" {
   description = "Private subnets Definition"
   type = list(object({
     cidr_block = string,
-    name       = string
+    name       = string,
+    dns_label  = string
   }))
 }
 
@@ -45,35 +48,80 @@ variable "existing_compartment" {
   description = "The existing compartment where the network resources should be created. If this si set, the compartment_id variable should be empty"
 }
 
-variable "ingress_security_rules" {
-  description = "Ingress list for the VCN"
+# tflint-ignore: terraform_unused_declarations
+variable "private_security_rules" {
+  description = "Private security list rules"
   type = list(object({
-    description = string,
-    protocol    = string,
-    source      = string,
-    source_type = string,
-    stateless   = string,
-    tcp_options = object({
-      max = string,
-      min = string
-    })
+    security_list_name = string
+    subnetwork_name    = string,
+    rules = list(object({
+      description = string,
+      protocol    = string,
+      source      = string,
+      source_type = string,
+      stateless   = string,
+      tcp_options = object({
+        max = string,
+        min = string
+      })
+    }))
   }))
 }
 
-variable "egress_security_rules" {
-  description = "Egress list for the VCN"
+variable "public_security_rules" {
+  description = "Public security list rules"
   type = list(object({
-    description   = string,
-    protocol      = string,
-    stateless     = string,
-    public_subnet = bool,
-    tcp_options = object({
-      max = string,
-      min = string
-    })
+    security_list_name = string,
+    subnetwork_name    = string,
+    rules = list(object({
+      description = string,
+      protocol    = string,
+      source      = string,
+      source_type = string,
+      stateless   = string,
+      tcp_options = object({
+        max = string,
+        min = string
+      })
+    }))
+  }))
+}
+# tflint-ignore: terraform_unused_declarations
+# variable "egress_security_rules" {
+#   description = "Egress list for the VCN"
+#   type = list(object({
+#     description   = string,
+#     protocol      = string,
+#     stateless     = string,
+#     public_subnet = bool,
+#     tcp_options = object({
+#       max = string,
+#       min = string
+#     })
+#   }))
+# }
+
+variable "private_route_rules" {
+  description = "The private route rules attached on each private subnets"
+  type = list(object({
+    destination      = string,
+    destination_type = string, #CIDR_BLOCK , IP
+    network_entity   = string, #NAT, SRVC, DRG OR OCID
+    description      = string
   }))
 }
 
+variable "public_route_rules" {
+  description = "The public route rules attached on each private subnets"
+  type = list(object({
+    destination      = string,
+    destination_type = string, #CIDR_BLOCK , IP
+    network_entity   = string, #INET, SRVC OR OCID
+    description      = string
+  }))
+}
+
+# tflint-ignore: terraform_unused_declarations
 variable "application_name" {
   type        = string
   default     = "General"
