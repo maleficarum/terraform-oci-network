@@ -31,7 +31,7 @@ resource "oci_core_subnet" "public_subnet" {
 
   security_list_ids = compact(concat(
     [
-      for security_rule in var.public_security_rules : 
+      for security_rule in var.public_security_rules :
       oci_core_security_list.public_security_list[index(var.public_security_rules, security_rule)].id
       if security_rule.subnetwork_name == var.public_subnet_definition[count.index].name
     ],
@@ -59,7 +59,7 @@ resource "oci_core_subnet" "private_subnet" {
 
   security_list_ids = compact(concat(
     [
-      for security_rule in var.private_security_rules : 
+      for security_rule in var.private_security_rules :
       oci_core_security_list.private_security_list[index(var.private_security_rules, security_rule)].id
       if security_rule.subnetwork_name == var.private_subnet_definition[count.index].name
     ],
@@ -88,7 +88,7 @@ resource "oci_core_route_table" "public_route_table" {
     for_each = var.public_route_rules
 
     content {
-      destination       = route_rules.value.destination
+      destination       = route_rules.value.network_entity == "SRVC" ? data.oci_core_services.all_services.services[0]["cidr_block"] :route_rules.value.destination
       destination_type  = route_rules.value.destination_type
       network_entity_id = route_rules.value.network_entity == "INET" ? oci_core_internet_gateway.internet_gateway.id : (route_rules.value.network_entity == "SRVC" ? oci_core_service_gateway.service_gateway.id : route_rules.value.network_entity)
       description       = route_rules.value.description
@@ -112,7 +112,7 @@ resource "oci_core_route_table" "private_route_table" {
     for_each = var.private_route_rules
 
     content {
-      destination       = route_rules.value.destination
+      destination       = route_rules.value.network_entity == "SRVC" ? data.oci_core_services.all_services.services[0]["cidr_block"] :route_rules.value.destination
       destination_type  = route_rules.value.destination_type
       network_entity_id = route_rules.value.network_entity == "NAT" ? oci_core_nat_gateway.nat_gateway.id : (route_rules.value.network_entity == "SRVC" ? oci_core_service_gateway.service_gateway.id : route_rules.value.network_entity)
       description       = route_rules.value.description
@@ -166,6 +166,17 @@ resource "oci_core_service_gateway" "service_gateway" {
   route_table_id = oci_core_vcn.vcn.default_route_table_id
 
 }
+
+# resource "oci_core_drg" "drg" {
+#   count = var.vcn_definition.has_drg
+
+#   compartment_id = var.compartment_id
+#   display_name   = "example-drg"
+  
+#   # Optional parameters
+#   defined_tags   = var.defined_tags
+#   freeform_tags  = var.freeform_tags
+# }
 
 resource "oci_core_default_security_list" "vcn_security_list" {
   compartment_id = local.compartment_id

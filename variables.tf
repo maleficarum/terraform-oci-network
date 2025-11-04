@@ -8,7 +8,8 @@ variable "vcn_definition" {
   type = object({
     cidr_block = string,
     name       = string,
-    dns_label  = string
+    dns_label  = string,
+    #has_drg = optional(bool, false)
   })
 }
 
@@ -71,7 +72,7 @@ variable "public_security_rules" {
   description = "Public security list rules"
   type = list(object({
     security_list_name = string,
-      subnetwork_name    = string,
+    subnetwork_name    = string,
     rules = list(object({
       description = string,
       protocol    = string,
@@ -105,7 +106,7 @@ variable "private_route_rules" {
   type = list(object({
     destination      = string,
     destination_type = string, #CIDR_BLOCK , IP
-    network_entity   = string, #NAT, SRVC OR OCID
+    network_entity   = string, #NAT, SRVC, DRG OR OCID
     description      = string
   }))
 }
