@@ -167,75 +167,75 @@ resource "oci_core_service_gateway" "service_gateway" {
 
 }
 
-resource "oci_core_drg" "drg" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
+# resource "oci_core_drg" "drg" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
 
-  compartment_id = local.compartment_id
-  display_name   = "DRG for ${var.vcn_definition.name}"
+#   compartment_id = local.compartment_id
+#   display_name   = "DRG for ${var.vcn_definition.name}"
 
-  # Optional parameters
-  #defined_tags   = var.defined_tags
-  #freeform_tags  = var.freeform_tags
-}
+#   # Optional parameters
+#   #defined_tags   = var.defined_tags
+#   #freeform_tags  = var.freeform_tags
+# }
 
-resource "oci_core_drg_attachment" "vcn_drg_attachment" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
+# resource "oci_core_drg_attachment" "vcn_drg_attachment" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
 
-  drg_id         = oci_core_drg.drg[count.index].id
-  vcn_id         = oci_core_vcn.vcn.id
-  route_table_id = oci_core_route_table.drg_route_table[count.index].id
-  display_name   = "drg-attachment-with-custom-rt"
-}
+#   drg_id         = oci_core_drg.drg[count.index].id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   route_table_id = oci_core_route_table.drg_route_table[count.index].id
+#   display_name   = "drg-attachment-with-custom-rt"
+# }
 
-resource "oci_core_route_table" "drg_route_table" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
+# resource "oci_core_route_table" "drg_route_table" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
 
-  compartment_id = local.compartment_id
-  vcn_id         = oci_core_vcn.vcn.id
-  display_name   = "drg-route-table"
+#   compartment_id = local.compartment_id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   display_name   = "drg-route-table"
 
-  #TODO: ESto en teoria lo hace automaticamente la creacion del DRG
-  # route_rules {
-  #   destination       = "10.10.0.0/16"#TODO: esto debe estar como destino en la configuracion
-  #   destination_type  = "DYNAMIC"
-  #   network_entity_id = oci_core_drg.drg[count.index].id
-  # }
+#   #TODO: ESto en teoria lo hace automaticamente la creacion del DRG
+#   # route_rules {
+#   #   destination       = "10.10.0.0/16"#TODO: esto debe estar como destino en la configuracion
+#   #   destination_type  = "DYNAMIC"
+#   #   network_entity_id = oci_core_drg.drg[count.index].id
+#   # }
 
-  #TODO: Esto debe ser por cada subred
-  # route_rules {
-  #   destination       = oci_core_subnet.private_subnet[count.index].cidr_block
-  #   destination_type  = "DYNAMIC"
-  #   network_entity_id = oci_core_subnet.private_subnet[count.index].id
-  # }
+#   #TODO: Esto debe ser por cada subred
+#   # route_rules {
+#   #   destination       = oci_core_subnet.private_subnet[count.index].cidr_block
+#   #   destination_type  = "DYNAMIC"
+#   #   network_entity_id = oci_core_subnet.private_subnet[count.index].id
+#   # }
 
-}
+# }
 
-#TODO: Deben existir dos statements, uno por VCN y uno para todo lo demas
-resource "oci_core_drg_route_distribution" "test_drg_route_distribution" {
-  #Required
-  distribution_type = var.drg_route_distribution_distribution_type
-  drg_id            = oci_core_drg.test_drg.id
+# #TODO: Deben existir dos statements, uno por VCN y uno para todo lo demas
+# resource "oci_core_drg_route_distribution" "test_drg_route_distribution" {
+#   #Required
+#   distribution_type = var.drg_route_distribution_distribution_type
+#   drg_id            = oci_core_drg.test_drg.id
 
-  display_name = var.drg_route_distribution_display_name
-}
+#   display_name = var.drg_route_distribution_display_name
+# }
 
-#TODO: para all debe existir un statement.
-resource "oci_core_drg_route_distribution_statement" "test_drg_route_distribution_statement" {
-  #Required
-  drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
-  action                    = var.drg_route_distribution_statement_statements_action
-  #Optional
-  match_criteria {
-    #Required
-    match_type = var.drg_route_distribution_statement_statements_match_criteria_match_type
+# #TODO: para all debe existir un statement.
+# resource "oci_core_drg_route_distribution_statement" "test_drg_route_distribution_statement" {
+#   #Required
+#   drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
+#   action                    = var.drg_route_distribution_statement_statements_action
+#   #Optional
+#   match_criteria {
+#     #Required
+#     match_type = var.drg_route_distribution_statement_statements_match_criteria_match_type
 
-    #Optional
-    attachment_type   = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
-    drg_attachment_id = oci_core_drg_attachment.test_drg_attachment.id
-  }
-  priority = var.drg_route_distribution_statement_statements_priority
+#     #Optional
+#     attachment_type   = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
+#     drg_attachment_id = oci_core_drg_attachment.test_drg_attachment.id
+#   }
+#   priority = var.drg_route_distribution_statement_statements_priority
 
-}
+# }
 
 resource "oci_core_default_security_list" "vcn_security_list" {
   compartment_id = local.compartment_id
