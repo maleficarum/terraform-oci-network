@@ -1,3 +1,5 @@
+# Author: Oscar I Hernandez
+
 resource "oci_identity_compartment" "network_compartment" {
   count = var.compartment_id != "" ? 1 : 0
 
@@ -12,8 +14,7 @@ resource "oci_core_vcn" "vcn" {
   compartment_id = local.compartment_id
   dns_label      = var.vcn_definition.dns_label
 
-  freeform_tags = {
-  }
+  freeform_tags = var.vcn_definition.freeform_tags
 
   defined_tags = {}
 
@@ -38,9 +39,7 @@ resource "oci_core_subnet" "public_subnet" {
     [oci_core_default_security_list.vcn_security_list.id]
   ))
 
-  freeform_tags = {
-  }
-
+  freeform_tags = var.public_subnet_definition[count.index].freeform_tags
 
 }
 
@@ -66,23 +65,13 @@ resource "oci_core_subnet" "private_subnet" {
     [oci_core_default_security_list.vcn_security_list.id]
   ))
 
-  freeform_tags = {
-  }
-
-  defined_tags = {}
+  freeform_tags = var.private_subnet_definition[count.index].freeform_tags
 }
 
 resource "oci_core_route_table" "public_route_table" {
   compartment_id = local.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = "${var.vcn_definition.name}-public_route-table"
-
-  # route_rules {
-  #   network_entity_id = oci_core_internet_gateway.internet_gateway.id
-  #   description       = "Internet Gateway"
-  #   destination       = "0.0.0.0/0"
-  #   destination_type  = "CIDR_BLOCK"
-  # }
 
   dynamic "route_rules" {
     for_each = var.public_route_rules
@@ -95,10 +84,7 @@ resource "oci_core_route_table" "public_route_table" {
     }
   }
 
-  freeform_tags = {
-  }
-
-  defined_tags = {}
+  freeform_tags = var.vcn_definition.freeform_tags
 
 }
 
@@ -119,14 +105,7 @@ resource "oci_core_route_table" "private_route_table" {
     }
   }
 
-  freeform_tags = {
-  }
-
-  # defined_tags = {
-  #   "Oracle-Tags.CreatedBy"   = "default/terraform-cae",
-  #   "Oracle-Tags.Environment" = var.environment
-  #   "Oracle-Tags.Application" = var.application_name
-  # }
+  freeform_tags = var.vcn_definition.freeform_tags
 }
 
 resource "oci_core_internet_gateway" "internet_gateway" {
@@ -136,8 +115,7 @@ resource "oci_core_internet_gateway" "internet_gateway" {
   enabled      = true
   display_name = "${var.vcn_definition.name}-igw"
 
-  freeform_tags = {
-  }
+  freeform_tags = var.vcn_definition.freeform_tags
 
 }
 
@@ -148,8 +126,7 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   block_traffic = false
   display_name  = "${var.vcn_definition.name}-nat-gwy"
 
-  freeform_tags = {
-  }
+  freeform_tags = var.vcn_definition.freeform_tags
 
 }
 
@@ -165,77 +142,79 @@ resource "oci_core_service_gateway" "service_gateway" {
 
   route_table_id = oci_core_vcn.vcn.default_route_table_id
 
-}
-
-resource "oci_core_drg" "drg" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
-
-  compartment_id = local.compartment_id
-  display_name   = "DRG for ${var.vcn_definition.name}"
-
-  # Optional parameters
-  #defined_tags   = var.defined_tags
-  #freeform_tags  = var.freeform_tags
-}
-
-resource "oci_core_drg_attachment" "vcn_drg_attachment" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
-
-  drg_id         = oci_core_drg.drg[count.index].id
-  vcn_id         = oci_core_vcn.vcn.id
-  route_table_id = oci_core_route_table.drg_route_table[count.index].id
-  display_name   = "drg-attachment-with-custom-rt"
-}
-
-resource "oci_core_route_table" "drg_route_table" {
-  count = var.vcn_definition.has_drg == true ? 1 : 0
-
-  compartment_id = local.compartment_id
-  vcn_id         = oci_core_vcn.vcn.id
-  display_name   = "drg-route-table"
-
-  #TODO: ESto en teoria lo hace automaticamente la creacion del DRG
-  # route_rules {
-  #   destination       = "10.10.0.0/16"#TODO: esto debe estar como destino en la configuracion
-  #   destination_type  = "DYNAMIC"
-  #   network_entity_id = oci_core_drg.drg[count.index].id
-  # }
-
-  #TODO: Esto debe ser por cada subred
-  # route_rules {
-  #   destination       = oci_core_subnet.private_subnet[count.index].cidr_block
-  #   destination_type  = "DYNAMIC"
-  #   network_entity_id = oci_core_subnet.private_subnet[count.index].id
-  # }
+  freeform_tags = var.vcn_definition.freeform_tags
 
 }
 
-#TODO: Deben existir dos statements, uno por VCN y uno para todo lo demas
-resource "oci_core_drg_route_distribution" "test_drg_route_distribution" {
-    #Required
-    distribution_type = var.drg_route_distribution_distribution_type
-    drg_id = oci_core_drg.test_drg.id
+# resource "oci_core_drg" "drg" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
 
-    display_name = var.drg_route_distribution_display_name
-}
+#   compartment_id = local.compartment_id
+#   display_name   = "DRG for ${var.vcn_definition.name}"
 
-#TODO: para all debe existir un statement.
-resource "oci_core_drg_route_distribution_statement" "test_drg_route_distribution_statement" {
-    #Required
-    drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
-    action = var.drg_route_distribution_statement_statements_action
-    #Optional
-    match_criteria {
-    #Required
-    match_type = var.drg_route_distribution_statement_statements_match_criteria_match_type
+#   # Optional parameters
+#   #defined_tags   = var.defined_tags
+#   #freeform_tags  = var.freeform_tags
+# }
 
-    #Optional
-    attachment_type = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
-    drg_attachment_id = oci_core_drg_attachment.test_drg_attachment.id
-    }
-    priority = var.drg_route_distribution_statement_statements_priority
+# resource "oci_core_drg_attachment" "vcn_drg_attachment" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
 
-}
+#   drg_id         = oci_core_drg.drg[count.index].id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   route_table_id = oci_core_route_table.drg_route_table[count.index].id
+#   display_name   = "drg-attachment-with-custom-rt"
+# }
+
+# resource "oci_core_route_table" "drg_route_table" {
+#   count = var.vcn_definition.has_drg == true ? 1 : 0
+
+#   compartment_id = local.compartment_id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   display_name   = "drg-route-table"
+
+#   #TODO: ESto en teoria lo hace automaticamente la creacion del DRG
+#   # route_rules {
+#   #   destination       = "10.10.0.0/16"#TODO: esto debe estar como destino en la configuracion
+#   #   destination_type  = "DYNAMIC"
+#   #   network_entity_id = oci_core_drg.drg[count.index].id
+#   # }
+
+#   #TODO: Esto debe ser por cada subred
+#   # route_rules {
+#   #   destination       = oci_core_subnet.private_subnet[count.index].cidr_block
+#   #   destination_type  = "DYNAMIC"
+#   #   network_entity_id = oci_core_subnet.private_subnet[count.index].id
+#   # }
+
+# }
+
+# #TODO: Deben existir dos statements, uno por VCN y uno para todo lo demas
+# resource "oci_core_drg_route_distribution" "test_drg_route_distribution" {
+#   #Required
+#   distribution_type = var.drg_route_distribution_distribution_type
+#   drg_id            = oci_core_drg.test_drg.id
+
+#   display_name = var.drg_route_distribution_display_name
+# }
+
+# #TODO: para all debe existir un statement.
+# resource "oci_core_drg_route_distribution_statement" "test_drg_route_distribution_statement" {
+#   #Required
+#   drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
+#   action                    = var.drg_route_distribution_statement_statements_action
+#   #Optional
+#   match_criteria {
+#     #Required
+#     match_type = var.drg_route_distribution_statement_statements_match_criteria_match_type
+
+#     #Optional
+#     attachment_type   = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
+#     drg_attachment_id = oci_core_drg_attachment.test_drg_attachment.id
+#   }
+#   priority = var.drg_route_distribution_statement_statements_priority
+
+# }
 
 resource "oci_core_default_security_list" "vcn_security_list" {
   compartment_id = local.compartment_id
@@ -264,6 +243,7 @@ resource "oci_core_default_security_list" "vcn_security_list" {
   }
 
   manage_default_resource_id = oci_core_vcn.vcn.default_security_list_id
+
 }
 
 # type = list(object({
