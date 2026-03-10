@@ -10,6 +10,7 @@ variable "vcn_definition" {
     name       = string,
     dns_label  = string,
     has_drg    = optional(bool, false)
+    freeform_tags = optional(map(string), {})
   })
 }
 
@@ -18,7 +19,8 @@ variable "private_subnet_definition" {
   type = list(object({
     cidr_block = string,
     name       = string,
-    dns_label  = string
+    dns_label  = string,
+    freeform_tags = optional(map(string), {})
   }))
 }
 
@@ -26,7 +28,8 @@ variable "public_subnet_definition" {
   description = "Public subnets Definition"
   type = list(object({
     cidr_block = string,
-    name       = string
+    name       = string,
+    freeform_tags = optional(map(string), {})
   }))
 }
 
