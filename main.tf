@@ -212,28 +212,28 @@ resource "oci_core_route_table" "drg_route_table" {
 
 #TODO: Deben existir dos statements, uno por VCN y uno para todo lo demas
 resource "oci_core_drg_route_distribution" "test_drg_route_distribution" {
-    #Required
-    distribution_type = var.drg_route_distribution_distribution_type
-    drg_id = oci_core_drg.test_drg.id
+  #Required
+  distribution_type = var.drg_route_distribution_distribution_type
+  drg_id            = oci_core_drg.test_drg.id
 
-    display_name = var.drg_route_distribution_display_name
+  display_name = var.drg_route_distribution_display_name
 }
 
 #TODO: para all debe existir un statement.
 resource "oci_core_drg_route_distribution_statement" "test_drg_route_distribution_statement" {
-    #Required
-    drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
-    action = var.drg_route_distribution_statement_statements_action
-    #Optional
-    match_criteria {
+  #Required
+  drg_route_distribution_id = oci_core_drg_route_distribution.test_drg_route_distribution.id
+  action                    = var.drg_route_distribution_statement_statements_action
+  #Optional
+  match_criteria {
     #Required
     match_type = var.drg_route_distribution_statement_statements_match_criteria_match_type
 
     #Optional
-    attachment_type = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
+    attachment_type   = var.drg_route_distribution_statement_statements_match_criteria_attachment_type
     drg_attachment_id = oci_core_drg_attachment.test_drg_attachment.id
-    }
-    priority = var.drg_route_distribution_statement_statements_priority
+  }
+  priority = var.drg_route_distribution_statement_statements_priority
 
 }
 
