@@ -6,10 +6,10 @@ variable "environment" {
 variable "vcn_definition" {
   description = "VCN Definition"
   type = object({
-    cidr_block = string,
-    name       = string,
-    dns_label  = string,
-    has_drg    = optional(bool, false)
+    cidr_block    = string,
+    name          = string,
+    dns_label     = string,
+    has_drg       = optional(bool, false)
     freeform_tags = optional(map(string), {})
   })
 }
@@ -17,9 +17,9 @@ variable "vcn_definition" {
 variable "private_subnet_definition" {
   description = "Private subnets Definition"
   type = list(object({
-    cidr_block = string,
-    name       = string,
-    dns_label  = string,
+    cidr_block    = string,
+    name          = string,
+    dns_label     = string,
     freeform_tags = optional(map(string), {})
   }))
 }
@@ -27,8 +27,8 @@ variable "private_subnet_definition" {
 variable "public_subnet_definition" {
   description = "Public subnets Definition"
   type = list(object({
-    cidr_block = string,
-    name       = string,
+    cidr_block    = string,
+    name          = string,
     freeform_tags = optional(map(string), {})
   }))
 }
