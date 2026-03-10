@@ -9,7 +9,7 @@ variable "vcn_definition" {
     cidr_block = string,
     name       = string,
     dns_label  = string,
-    #has_drg = optional(bool, false)
+    has_drg = optional(bool, false)
   })
 }
 
